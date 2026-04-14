@@ -1,61 +1,44 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
-const bodyParser = require('body-parser');
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-const db = new sqlite3.Database('./notes.db');
-
-// Create table
-db.run(`CREATE TABLE IF NOT EXISTS notes (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT,
-  content TEXT
-)`);
+let notes = [];
+let id = 1;
 
 // GET all notes
 app.get('/notes', (req, res) => {
-  db.all('SELECT * FROM notes', [], (err, rows) => {
-    if (err) return res.status(500).json(err);
-    res.json(rows);
-  });
+  res.json(notes);
 });
 
 // CREATE note
 app.post('/notes', (req, res) => {
   const { title, content } = req.body;
-  db.run(
-    'INSERT INTO notes (title, content) VALUES (?, ?)',
-    [title, content],
-    function (err) {
-      if (err) return res.status(500).json(err);
-      res.json({ id: this.lastID });
-    }
-  );
+  const newNote = { id: id++, title, content };
+  notes.push(newNote);
+  res.json(newNote);
 });
 
 // UPDATE note
 app.put('/notes/:id', (req, res) => {
   const { title, content } = req.body;
-  db.run(
-    'UPDATE notes SET title=?, content=? WHERE id=?',
-    [title, content, req.params.id],
-    (err) => {
-      if (err) return res.status(500).json(err);
-      res.json({ message: 'Updated' });
-    }
-  );
+  const note = notes.find(n => n.id == req.params.id);
+
+  if (note) {
+    note.title = title;
+    note.content = content;
+    res.json({ message: "Updated" });
+  } else {
+    res.status(404).json({ error: "Not found" });
+  }
 });
 
 // DELETE note
 app.delete('/notes/:id', (req, res) => {
-  db.run('DELETE FROM notes WHERE id=?', [req.params.id], (err) => {
-    if (err) return res.status(500).json(err);
-    res.json({ message: 'Deleted' });
-  });
+  notes = notes.filter(n => n.id != req.params.id);
+  res.json({ message: "Deleted" });
 });
 
 const PORT = process.env.PORT || 5000;
