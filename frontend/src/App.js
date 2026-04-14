@@ -8,7 +8,7 @@ function App() {
   const [content, setContent] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
-  const API = "http://localhost:5000";
+  const API = "https://markdown-notes-app-u951.onrender.com";
 
   // Fetch notes
   const fetchNotes = async () => {
