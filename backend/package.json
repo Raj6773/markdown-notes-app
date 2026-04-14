@@ -2,9 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "postinstall": "npm rebuild sqlite3"
   },
   "keywords": [],
   "author": "",
@@ -14,12 +15,8 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "sqlite3": "^6.0.1"
-  }
-  "scripts": {
-  "start": "node server.js",
-  "postinstall": "npm rebuild sqlite3"
-}
+  },
   "engines": {
-  "node": "18.x"
-}
+    "node": "18.x"
+  }
 }
